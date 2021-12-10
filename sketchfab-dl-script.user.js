@@ -7,9 +7,9 @@
 // @version        1.0
 //
 // Urls process this user script on
-// @include        /^https?://(www\.)?sketchfab\.com/show/.*$/
+// @include        /^https?://(www\.)?sketchfab\.com/3d-models/.*$/
 // ==/UserScript==
- 
+
 function getElementByXpath(path) {
     return document.evaluate(path, document, null, 9, null).singleNodeValue;
 };
@@ -82,7 +82,7 @@ function recurse(node) {
         var useID = '_uniqueID' in node;
         for (var i = 0; i < computedIDs.length; ++i) {
             if (computedIDs[i] == (useID ? node._uniqueID : node._name)) {
-                computeOBJ = false; 
+                computeOBJ = false;
                 break;
             }
         }
@@ -98,7 +98,7 @@ function recurse(node) {
     }
 };
 window.dlOBJ = function() {
-    recurse(view3D._scene); 
+    recurse(view3D._scene);
     // Credit: http://thiscouldbebetter.wordpress.com/2012/12/18/loading-editing-and-saving-a-text-file-in-html5-using-javascrip/
     function destroyClickedElement(event)
     {
@@ -106,19 +106,19 @@ window.dlOBJ = function() {
     }
     var textToWrite = combinedOBJ;
     var textFileAsBlob = new Blob([textToWrite], {type:'text/plain'});
-    
+
     // Credit: http://phpjs.org/functions
     function basename (path, suffix) {
         var b = path.replace(/^.*[\/\\]/g, '');
-        
+
         if (typeof suffix === 'string' && b.substr(b.length - suffix.length) == suffix) {
             b = b.substr(0, b.length - suffix.length);
         }
-        
+
         return b;
     }
     var fileNameToSaveAs = basename(document.URL) + ".obj";
-    
+
     var downloadLink = document.createElement("a");
     downloadLink.download = fileNameToSaveAs;
     downloadLink.innerHTML = "Download File";
@@ -139,8 +139,13 @@ window.dlOBJ = function() {
     }
     downloadLink.click();
 };
-var ul = getElementByXpath('//*[@id="main-menu"]/ul');
-var li=document.createElement("li");
-li.innerHTML='<a class="order-model" id="downloadOBJ"><span>Download .OBJ</span></a>';
-li.addEventListener ("click", dlOBJ , false);
-ul.appendChild(li);
+
+let divGroup = document.querySelector(".c-model-actions");
+let btn = document.createElement("button");
+btn.setAttribute("title", "Download Free 3D Model");
+btn.setAttribute("id", "downloadOBJ");
+btn.classList.add("button", "btn-textified", "btn-medium", "c-model-actions__button", "--download");
+btn.innerHTML = '<span class="icon  fa fa-download"></span><span class="button__text-container">Download 3D Model</span>';
+
+btn.addEventListener ("click", dlOBJ , false);
+divGroup.prepend(btn);
